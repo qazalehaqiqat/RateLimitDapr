@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ratelimit
+  namespace: poc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ratelimit
+  template:
+    metadata:
+      labels:
+        app: ratelimit
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "ratelimit"
+        dapr.io/app-port: "80"
+        dapr.io/enable-api-logging: "true"
+        dapr.io/config: "ratelimit"
+    spec:
+      containers:
+      - image: ealen/echo-server
+        name : echoserver
+        env:
+        - name: PORT
+          value: "80"
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+
+
+
+ 
+        
