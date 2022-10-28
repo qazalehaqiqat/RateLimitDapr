@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+
+  ############################
+  # App
+  ############################
+  apione:
+    image: "ealen/echo-server"
+    depends_on:
+      - placement
+
+  ############################
+  # Dapr sidecar
+  ############################
+  
+  apione-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+      "-app-id", "apione",
+      "-app-port", "80",
+      "-placement-host-address", "placement:50006",
+      "-components-path", "/components",
+      "-config", "config.yaml"    
+      ]
+    volumes:
+      - "./components:/components"
+      - "./config.yaml:/config.yaml"
+    ports:
+      - "3000:3500"
+    depends_on:
+      - apione
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+
